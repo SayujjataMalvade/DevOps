@@ -1,58 +1,71 @@
+# EC2 SSH Connection and Disk Management on Linux
 
-# LVM and Disk Management Commands
+This repository provides step-by-step instructions for:
 
-This document provides a guide to using Linux commands for LVM (Logical Volume Management) and disk management.
+1. Establishing SSH connections between AWS EC2 instances from a Windows machine.
 
-## Commands Overview
+2. Basic Linux disk and LVM (Logical Volume Management) operations including creating, formatting, mounting, and managing volumes.
 
-```bash
+# Prerequisites
+
+1. At least one running EC2 instance (e.g., Server)
+
+2. Access to instances via MobaXterm, Git Bash, or CMD
+
+# Disk and LVM Management on Linux
+
+# 1. View Block Devices
+```groovy
 lsblk
-clear
-vgs
-lvs
+```
+
+# 2. Create Mount Point for Logical Volume
+```groovy
 mkdir /mnt/sam_lv_mount
+```
+
+# 3. Format Logical Volume with ext4
+```groovy
 mkfs.ext4 /dev/test_vg/demo_lv
+```
+
+# 4. Mount Logical Volume
+```groovy
 mount /dev/test_vg/demo_lv /mnt/sam_lv_mount
+```
+
+# 5.Create Directory and File 
+```groovy
 cd /mnt/sam_lv_mount/
 mkdir devops
 vim demo.txt
-cd
+```
+
+# 6. View File Contents
+```groovy 
 cat /mnt/sam_lv_mount/devops/demo.txt
+```
+
+# 7. Unmount and Remount Logical Volume
+ ```groovy 
 umount /mnt/sam_lv_mount/
 mount /dev/test_vg/demo_lv /mnt/sam_lv_mount
+```
+
+# 8. Mount a New Disk
+  ```groovy
 mkdir /mnt/sam_disk_mount
 mkfs -t ext4 /dev/xvdh
 mount /dev/xvdh /mnt/sam_disk_mount/
+```
+
+# 9. Check Disk Usage
+ ```groovy
 df -h
 ```
 
-## Description of Commands
+# Outcome:
 
-1. **lsblk**: Lists all block devices in a tree format to display their relationships.
-2. **clear**: Clears the terminal screen for better readability.
-3. **vgs**: Displays information about the volume groups.
-4. **lvs**: Lists logical volumes in the system.
-5. **mkdir**: Creates a directory, used here for mounting logical volumes and disks.
-6. **mkfs.ext4**: Formats the specified device or logical volume with the ext4 filesystem.
-7. **mount**: Mounts a filesystem (logical volume or block device) to the specified directory.
-8. **cd**: Changes the current working directory.
-9. **vim**: Opens the Vim editor to create or edit files.
-10. **cat**: Outputs the content of a file to the terminal.
-11. **umount**: Unmounts a filesystem from a directory.
-12. **df -h**: Displays disk usage and available space in a human-readable format.
+1. Logical volumes and disks are formatted, mounted, and ready for use.
 
-## Workflow Example
-
-1. Create and format a logical volume (`/dev/test_vg/demo_lv`) with ext4 and mount it to `/mnt/sam_lv_mount`.
-2. Create a directory named `devops` and add a text file using `vim`.
-3. Verify the contents of the file with `cat` after mounting and unmounting the logical volume.
-4. Format the block device (`/dev/xvdh`) with ext4 and mount it to `/mnt/sam_disk_mount`.
-5. Use `df -h` to check disk space usage and confirm the mounts.
-
----
-
-## Notes
-
-- Ensure you have the necessary administrative privileges (e.g., root or sudo) to execute these commands.
-- Always unmount devices before removing or making significant changes to the underlying filesystem.
-
+2. Directories and files can now be managed within the mounted volumes.
