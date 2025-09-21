@@ -1,130 +1,137 @@
-# Change directory to 'scripts' folder
-cd scripts/
+#!/bin/bash
+# ================================================================
+# Script Name: setup_demo.sh
+# Description: Demonstrates basic Linux operations, script creation,
+#              permissions, backups, and Docker setup.
+# Author: Sayujjata Malvade
+# ================================================================
 
-# Check the path for bash and sh interpreters
+set -e  # Exit immediately if a command exits with a non-zero status
+
+# ------------------------------
+# 1. Change to scripts directory
+# ------------------------------
+cd ~/scripts || { echo "❌ scripts directory not found"; exit 1; }
+
+# ------------------------------
+# 2. Verify bash and sh interpreters
+# ------------------------------
+echo "👉 Checking interpreters..."
 which bash
 which sh
 
-# Clear the terminal screen
-clear
+# ------------------------------
+# 3. Create/Edit hello.sh
+# ------------------------------
+echo "👉 Creating hello.sh..."
+cat > hello.sh <<'EOF'
+#!/bin/bash
+echo "Hello, World! 🎉"
+EOF
 
-# List files in the current directory
-ls
-
-# Open or create 'hello.sh' in vim (a text editor)
-vim hello.sh
-
-# Display the contents of 'hello.sh'
-cat hello.sh
-
-# List files in long format and include hidden files (-la)
-ls -la
-
-# List files in long format (-l)
-ls -l
-
-# Change permissions of 'hello.sh' to read/write/execute for owner, group, and read-only for others
 chmod 774 hello.sh
-
-# Execute the 'hello.sh' script
 ./hello.sh
 
-# Open 'variables.sh' in vim
-vim variables.sh
+# ------------------------------
+# 4. Create/Edit variables.sh
+# ------------------------------
+echo "👉 Creating variables.sh..."
+cat > variables.sh <<'EOF'
+#!/bin/bash
+NAME="Sayujjata"
+ROLE="DevOps Engineer"
+echo "User: $NAME | Role: $ROLE"
+EOF
 
-# Change permissions of 'variables.sh' to allow execution
 chmod 774 variables.sh
-
-# Execute 'variables.sh' script
 ./variables.sh
 
-# Open 'install_ngnix.sh' in vim (to edit or create it)
-vim install_ngnix.sh
+# ------------------------------
+# 5. Create install_package.sh
+# ------------------------------
+echo "👉 Creating install_package.sh..."
+cat > install_package.sh <<'EOF'
+#!/bin/bash
+# Usage: ./install_package.sh <package_name>
+PKG=$1
+if [ -z "$PKG" ]; then
+  echo "❌ No package specified"
+  exit 1
+fi
 
-# Set executable permissions for 'install_ngnix.sh'
-chmod 774 install_ngnix.sh
+echo "🔄 Installing package: $PKG"
+sudo apt-get update -y
+sudo apt-get install -y "$PKG"
+EOF
 
-# Run the 'install_ngnix.sh' script
-./install_ngnix.sh
+chmod 774 install_package.sh
 
-# Rename 'install_ngnix.sh' to 'install_package.sh'
-mv install_ngnix.sh install_packge.sh
-mv install_packge.sh install_package.sh
-
-# Open 'install_package.sh' in vim
-vim install_package.sh
-
-# Run 'install_package.sh' with 'docker.io' as an argument
+# Run for different packages
 ./install_package.sh docker.io
-
-# Run 'install_package.sh' with 'ssh' as an argument
 ./install_package.sh ssh
-
-# Run 'install_package.sh' with 'tree' as an argument
 ./install_package.sh tree
 
-# Check directory structure in '/home/ubuntu'
-tree /home/ubuntu
+# ------------------------------
+# 6. Directory structure check
+# ------------------------------
+echo "👉 Checking directory structure..."
+tree /home/ubuntu || echo "tree not installed"
 
-# Open or create 'demo.sh' in vim
-vim demo.sh
+# ------------------------------
+# 7. Create demo.sh
+# ------------------------------
+echo "👉 Creating demo.sh..."
+cat > demo.sh <<'EOF'
+#!/bin/bash
+echo "This is a demo script!"
+EOF
 
-# Change permissions of 'demo.sh' to make it executable
 chmod 774 demo.sh
-
-# Execute the 'demo.sh' script
 ./demo.sh
 
-# Print working directory
-pwd
-
-# Change directory up one level
+# ------------------------------
+# 8. Create backup archive
+# ------------------------------
+echo "👉 Creating backup..."
 cd ..
+zip -r backup.zip ~/scripts
+unzip -o backup.zip
 
-# Create a zip archive named 'backup.zip' from '/home/ubuntu/scripts'
-zip -r backup.zip /home/ubuntu/scripts
+# ------------------------------
+# 9. Create backup.sh
+# ------------------------------
+cd ~/scripts
+echo "👉 Creating backup.sh..."
+cat > backup.sh <<'EOF'
+#!/bin/bash
+SRC_DIR=$1
+DEST_DIR=~/backup
 
-# Unzip 'backup.zip'
-unzip backup.zip
+if [ -z "$SRC_DIR" ]; then
+  echo "❌ Usage: ./backup.sh <source_directory>"
+  exit 1
+fi
 
-# Display current date and time
-date
+mkdir -p "$DEST_DIR"
+cp -r "$SRC_DIR" "$DEST_DIR"
 
-# Open or create 'backup.sh' in vim
-vim backup.sh
+echo "✅ Backup completed! Files copied to $DEST_DIR"
+EOF
 
-# Set executable permissions for 'backup.sh'
 chmod 774 backup.sh
+./backup.sh ~/scripts
 
-# Run 'backup.sh' script
-./backup.sh
+# ------------------------------
+# 10. Docker Setup
+# ------------------------------
+echo "👉 Setting up Docker..."
+sudo apt-get update -y
+sudo apt-get install -y docker.io
 
-# Grant superuser executable permissions to 'backup.sh'
-sudo chmod 774 backup.sh
-
-# Run a Docker container named 'mysql' with MySQL image
+echo "👉 Running MySQL container..."
 docker run -d --name mysql -e MYSQL_ROOT_PASSWORD=root mysql:latest
 
-# Initialize Docker (if needed)
-docker init
-
-# Install Docker using apt (commands corrected in next lines)
-sudo apt-get install docker
-
-# Create a backup directory
-mkdir backup
-
-# Remove 'backup' directory and any directories named 'backups'
-rm -rf backup backups
-
-# Move into the 'backup' directory
-cd backup/
-
-# Change back to previous directory
-cd ..
-
-# Execute 'backup.sh' in '/home/ubuntu/scripts' with bash
-./bash backup.sh /home/ubuntu/scripts
-
-# Display contents of 'demo.sh'
-cat demo.sh
+# ------------------------------
+# Script Completed
+# ------------------------------
+echo "🎯 Script execution completed successfully!"
